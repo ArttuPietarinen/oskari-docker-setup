@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="error" strict="false" name="OskariLogConfig">
   <Properties>
-    <Property name="LOG_DIR">logs</Property>
+    <Property name="LOG_DIR">/usr/local/tomcat/logs</Property>
   </Properties>
   <Appenders>
     <RollingFile name="File"
@@ -15,8 +15,8 @@
     	<DefaultRolloverStrategy max="50" />
     </RollingFile>
     <Console name="STDOUT">
-      	<PatternLayout pattern="%d %-5p %c - %m%n" />
-        <ThresholdFilter level="warn"/>
+      	<!--PatternLayout pattern="%d %-5p %c - %m%n" />
+        <ThresholdFilter level="warn"/-->
     </Console>
   </Appenders>
   <Loggers>
@@ -32,7 +32,11 @@
     <Logger name="org.quartz" level="warn">
       <AppenderRef ref="File"/>
     </Logger>
-    <Root level="info">
+      <Logger name="og4j.logger.org.springframework.core.env" level="debug">
+          <AppenderRef ref="File"/>
+          <AppenderRef ref="STDOUT" />
+      </Logger>
+    <Root level="debug">
       <AppenderRef ref="File"/>
       <AppenderRef ref="STDOUT" />
     </Root>

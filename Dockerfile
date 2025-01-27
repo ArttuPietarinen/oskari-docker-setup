@@ -40,7 +40,8 @@ FROM kartoza/geoserver:latest as geoserver
 WORKDIR .
 EXPOSE 8086:8080
 
-FROM jetty:10-jdk17-alpine-amazoncorretto as tomcat
+FROM tomcat:10-jdk17-corretto as tomcat
+#FROM jetty:10-jdk17-alpine-amazoncorretto as tomcat
 #FROM jetty:12-jdk17-amazoncorretto as tomcat # käynnistyy mutta sovellusta ei löydy
 #FROM jetty:9-jre8 as tomcat #TOImii
 
@@ -51,17 +52,41 @@ ENV OSKARI_CONFIGS=/oskari-configs
 #COPY --from=frontbuilder /oskari-front/dist $OSKARI_FRONT/dist
 COPY ./sample-application/dist /oskari-front/dist/
 ##comment out next line and uncomment line 55 if you want to build oskari-server manually
-COPY --from=backendbuilder /oskari/webapp-map/target/oskari-map.war $JETTY_BASE/webapps/
+#JETTY
+#Use docker to build
+#COPY --from=backendbuilder /oskari/webapp-map/target/oskari-map.war $JETTY_BASE/webapps/
+#Prebuilt
 #COPY  ./sample-server-extension/webapp-map/target/oskari-map.war $JETTY_BASE/webapps/
+#TOMCAT
+#Prebuilt
+COPY  ./sample-server-extension/webapp-map/target/oskari-map.war $CATALINA_HOME/webapps/ROOT.war
+#Use docker to build
+#COPY --from=backendbuilder /oskari/webapp-map/target/oskari-map.war $CATALINA_HOME/webapps/ROOT.war
 
-COPY build/data/jetty/oskari-ext.properties $JETTY_BASE/resources/
-COPY build/data/jetty/start.sh $JETTY_HOME
-COPY build/data/jetty/postgresql-42.7.4.jar $JETTY_BASE/lib/ext/
-COPY build/data/jetty/oskari-front.xml $JETTY_BASE/webapps/
-COPY build/data/jetty/oskari-map.xml $JETTY_BASE/webapps/
-COPY build/data/jetty/webdefault.xml $JETTY_BASE/etc/
+ENV OSKARI_FRONT=/oskari-front
+ENV OSKARI_CONFIGS=/oskari-configs
+ENV CATALINA_BASE=/usr/local/tomcat
 
-#RUN java -jar $JETTY_HOME/start.jar --add-module=server,http,deploy
-CMD java -jar $JETTY_HOME/start.jar
+##TOMCAT
+COPY ./build/data/tomcat/postgresql-42.7.4.jar $CATALINA_HOME/lib/
+COPY ./build/data/tomcat/start.sh $CATALINA_HOME
+COPY ./build/data/oskari-ext.properties $OSKARI_CONFIGS/
+COPY ./build/data/tomcat/log4j2.xml $OSKARI_CONFIGS/
+COPY ./build/data/tomcat/context.xml $CATALINA_BASE/conf/
+COPY ./build/data/tomcat/server.xml $CATALINA_BASE/conf/
+COPY ./build/data/tomcat/Catalina/localhost/Oskari.xml $CATALINA_BASE/conf/Catalina/localhost/
+COPY ./build/data/tomcat/Catalina/localhost/ROOT.xml $CATALINA_BASE/conf/Catalina/localhost/
+COPY ./build/data/tomcat/web.xml $CATALINA_BASE/conf/
+COPY ./build/data/jetty/articlesByTag/ $OSKARI_CONFIGS/articlesByTag/
+CMD ["sh", "-e", "start.sh"]
+##JETTY
+#COPY build/data/jetty/oskari-ext.properties $JETTY_BASE/resources/
+#COPY build/data/jetty/start.sh $JETTY_HOME
+#COPY build/data/jetty/postgresql-42.7.4.jar $JETTY_BASE/lib/ext/
+#COPY build/data/jetty/oskari-front.xml $JETTY_BASE/webapps/
+#COPY build/data/jetty/oskari-map.xml $JETTY_BASE/webapps/
+#COPY build/data/jetty/webdefault.xml $JETTY_BASE/etc/
+##RUN java -jar $JETTY_HOME/start.jar --add-module=server,http,deploy
+#CMD java -jar $JETTY_HOME/start.jar
 #CMD ["sh", "-e", "start.sh"]
-EXPOSE 8080 8081 80
+EXPOSE 8080 8081 80 5005

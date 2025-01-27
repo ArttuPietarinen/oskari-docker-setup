@@ -10,9 +10,15 @@ http://localhost:8080/
 
 
 ## You can make front-end or backend build faster to use prebuilded packages to save time
-### On Dockerfile you need comment / uncomment lines which uses frontbuilder and backendbuilder
-### You need to build sample-application manually ( npm i && npm run build ) if you dont use docker frontbuilder
-### You need to build sample-server-extension and oskari-server manually ( mvn clean install ) if you dont use docker backendbuilder
+On Dockerfile you need comment / uncomment lines which uses frontbuilder and backendbuilder
+You need to build sample-application manually ( npm i && npm run build ) if you dont use docker frontbuilder
+You need to build sample-server-extension and oskari-server manually ( mvn clean install ) if you dont use docker backendbuilder
+
+## Choosing versions
+You can checkout any oskari server branch or fork on 
+oskari-server, oskari-frontend, sample-application nad sample-server-extension submodules
+Default submodules are found on file .gitmodules.
+
 
 ## Build all
 on root level of repo:
