@@ -1,10 +1,14 @@
 # oskari frontend build
-FROM node:16-alpine3.16 as frontbuilder
+FROM node:18-alpine3.20 as frontbuilder
+#16-alpine3.16
+ENV export NODE_OPTIONS=--max_old_space_size=4096
 COPY ./sample-application /oskari-front
 COPY ./oskari-frontend /oskari-frontend
 RUN cd /oskari-front && \
-    npm ci && \
-    npm run build
+    rm -rf applications/*-3d && \
+    npm run dev-mode:enable && \
+    npm install && \
+    npm run build:dev
 
 
 #maven backend build container
@@ -48,8 +52,8 @@ ENV OSKARI_FRONT=/oskari-front
 ENV OSKARI_CONFIGS=/oskari-configs
 ##uncomment following line ( and comment line after that one) if you want docker to build frontend,
 ##otherwise you need to build front sample-application first
-#COPY --from=frontbuilder /oskari-front/dist $OSKARI_FRONT/dist
-COPY ./sample-application/dist /oskari-front/dist/
+COPY --from=frontbuilder /oskari-front/dist $OSKARI_FRONT/dist
+#COPY ./sample-application/dist /oskari-front/dist/
 ##comment out next line and uncomment line 55 if you want to build oskari-server manually
 #JETTY
 #Use docker to build
@@ -58,9 +62,9 @@ COPY ./sample-application/dist /oskari-front/dist/
 #COPY  ./sample-server-extension/webapp-map/target/oskari-map.war $JETTY_BASE/webapps/
 #TOMCAT
 #Prebuilt
-COPY  ./sample-server-extension/webapp-map/target/oskari-map.war $CATALINA_HOME/webapps/ROOT.war
+#COPY  ./sample-server-extension/webapp-map/target/oskari-map.war $CATALINA_HOME/webapps/ROOT.war
 #Use docker to build
-#COPY --from=backendbuilder /oskari/webapp-map/target/oskari-map.war $CATALINA_HOME/webapps/ROOT.war
+COPY --from=backendbuilder /oskari/webapp-map/target/oskari-map.war $CATALINA_HOME/webapps/ROOT.war
 
 ENV OSKARI_FRONT=/oskari-front
 ENV OSKARI_CONFIGS=/oskari-configs
