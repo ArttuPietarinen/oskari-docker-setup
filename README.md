@@ -1,5 +1,4 @@
-#Oskari development, contains docker setup for building oskari-server and oskari-frontend
-#and sample apps for backend and frontend
+# Oskari development, contains docker setup for building oskari-server and oskari-frontend and sample apps for backend and frontend
 
 Application responds from url:
 http://localhost:8080/
@@ -7,7 +6,6 @@ http://localhost:8080/
 ## prerequisite
 1. Installed docker desktop found on path
 2. docker-compose tool installed and found on path
-
 
 ## You can make front-end or backend build faster to use prebuilded packages to save time
 On Dockerfile you need comment / uncomment lines which uses frontbuilder and backendbuilder
@@ -18,7 +16,6 @@ You need to build sample-server-extension and oskari-server manually ( mvn clean
 You can checkout any oskari server branch or fork on 
 oskari-server, oskari-frontend, sample-application nad sample-server-extension submodules
 Default submodules are found on file .gitmodules.
-
 
 ## Build all
 on root level of repo:
@@ -34,16 +31,22 @@ on root level of repo:
 
 ## Running certain components independently
 
-### Geoportal backend
+### Oskari backend
 #### build
->docker build -t geoportal_tomcat --target tomcat -f Dockerfile .
+>docker build -t oskari_tomcat --target tomcat -f Dockerfile .
 #### run
->docker run geoportal_tomcat
-
+>docker run oskari_tomcat
 
 ### Database
 #### build
->docker build -t geoportal_database --target database -f Dockerfile .
+>docker build -t oskari_database --target databaseq -f Dockerfile .
 
 ### run
->docker run geoportal_database
+>docker run oskari_database
+
+### Build and start script
+Bash script to build oskari-server and sample-server-extension and build + start docker.
+Give permission to execute script
+>chmod a+x build_and_start.sh
+run
+>./build_and_start.sh

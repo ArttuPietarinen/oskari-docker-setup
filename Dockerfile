@@ -2,7 +2,6 @@
 FROM node:16-alpine3.16 as frontbuilder
 COPY ./sample-application /oskari-front
 COPY ./oskari-frontend /oskari-frontend
-#RUN apk add g++ make py3-pip
 RUN cd /oskari-front && \
     npm ci && \
     npm run build
@@ -36,9 +35,9 @@ COPY ./build/data/healthcheck.sh .
 EXPOSE 5432
 
 ##Geoserver image
-FROM kartoza/geoserver:latest as geoserver
-WORKDIR .
-EXPOSE 8086:8080
+#FROM kartoza/geoserver:latest as geoserver
+#WORKDIR .
+#EXPOSE 8086:8080
 
 FROM tomcat:10-jdk17-corretto as tomcat
 #FROM jetty:10-jdk17-alpine-amazoncorretto as tomcat
